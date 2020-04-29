@@ -87,5 +87,46 @@ def _example():
     print('inductance fraction', cpwline.calc_inductance_fraction())
 
 
+class TransmissionLine(object):
+    def __init__(self, frequency, inductance, resistance, capacitance, conductance):
+        self.frequency_angular = 2 * np.pi * frequency
+        self.inductance = inductance
+        self.resistance = resistance
+        self.capacitance = capacitance
+        self.conductance = conductance
+
+    def calc_impedance_line(self):
+        return np.sqrt((self.resistance + 1j * self.frequency_angular * self.inductance)
+                       / (self.conductance + 1j * self.frequency_angular * self.capacitance))
+
+    def calc_propagationconstant(self):
+        return np.sqrt((self.resistance + 1j * self.frequency_angular * self.inductance)
+                       * (self.conductance + 1j * self.frequency_angular * self.capacitance))
+
+    def calc_reflectioncoefficient(self, impedance_load):
+        return (impedance_load - TransmissionLine.calc_impedance_line(self)) \
+               / (impedance_load + TransmissionLine.calc_impedance_line(self))
+
+    def calc_impedance_input(self, length, impedance_load):
+        return TransmissionLine.calc_impedance_line(self) \
+               * (impedance_load + 1j * TransmissionLine.calc_impedance_line(self)
+                  * np.tan(TransmissionLine.calc_propagationconstant(self) * length)) \
+               / (TransmissionLine.calc_impedance_line(self) + 1j * impedance_load
+                  * np.tan(TransmissionLine.calc_propagationconstant(self) * length))
+
+
+def _example2():
+
+    tt = TransmissionLine(frequency=4e9, inductance=1e-7, resistance=0, capacitance=1e-9, conductance=0)
+    print('characteristic line impedance', tt.calc_impedance_line())
+    print('propagation constant', tt.calc_propagationconstant())
+    print('reflection coefficient', tt.calc_reflectioncoefficient(impedance_load=50))
+    print('input impedance', tt.calc_impedance_input(impedance_load=50, length=2000e-6))
+
+
 if __name__ == '__main__':
     _example()
+    _example2()
+
+
+
