@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.constants as pyc
 
-from mesoscopic.theorySC import Superconductivity
+from physics.mesoscopic.theorySC import Superconductivity
 
 
 class JosephsonJunction(object):
