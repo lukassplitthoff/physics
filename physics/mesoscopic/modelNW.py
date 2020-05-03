@@ -9,12 +9,12 @@ class HybridNW(object):
         self.coefficient = coefficient
 
     def impedance(self):
-        impt = 0
+        impt_inv = 0
         for i in range(len(self.coefficient)):
             impi = self.coefficient[i] * (1j * self.frequency_angular * self.inductance[i] + self.resistance[i])
-            impt += impi
+            impt_inv += 1/impi
 
-        return  impt
+        return 1/impt_inv
 
 def _example():
 
